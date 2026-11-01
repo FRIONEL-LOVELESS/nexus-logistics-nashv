@@ -33,9 +33,9 @@
     <h2>&gt; DEPLOYMENT STATUS</h2>
     <div class="row"><span>PROJECT</span><span>Drive File Relay</span></div>
     <div class="row"><span>WEB APP</span><span>Nexus Intake Console</span></div>
-    <div class="row"><span>VERSION</span><span class="ok">v2 // Oct 31, 2026 6:58 PM CDT</span></div>
+    <div class="row"><span>VERSION</span><span class="ok">v3 // Oct 31, 2026 7:09 PM CDT</span></div>
     <div class="row"><span>EXECUTES AS</span><span>Me (owner)</span></div>
-    <div class="row"><span>ACCESS</span><span class="warn">Anyone with a Google account</span></div>
+    <div class="row"><span>ACCESS</span><span class="ok">Only me (locked)</span></div>
     <div class="row"><span>RUNTIME</span><span>V8 // America/Chicago</span></div>
     <div class="row"><span>DRIVE ASSET</span><span>1ndrz2aXePS6XWnwN5_cidfkurWXIOPzG</span></div>
     <div class="btns">
@@ -46,12 +46,13 @@
 
   <div class="box">
     <h2>&gt; ENDPOINT MAP</h2>
+    <div class="row"><span>WEBHOOK</span><span>Nexus Intake Webhook v1 // open to Anyone</span></div>
     <ul>
       <li><span class="cy">doGet</span> &mdash; serves Index.html (RELAY CONSOLE)</li>
       <li><span class="cy">getRelayStats()</span> &mdash; counts files waiting in the intake folder</li>
       <li><span class="cy">executeManualBatch()</span> &mdash; shares each file to the 4 satellite accounts, moves it to HQ</li>
       <li><span class="cy">runDriveRelayPipeline()</span> &mdash; trigger-friendly wrapper for the batch</li>
-      <li><span class="cy">doPost</span> &mdash; telemetry webhook (telemetryNode, trackingLedger)</li>
+      <li><span class="cy">doPost</span> &mdash; telemetry, now on the separate public Nexus Intake Webhook</li>
     </ul>
   </div>
 
@@ -74,6 +75,7 @@
       <li>nexus-intake.gs &mdash; live server code (satellite emails redacted here)</li>
       <li>apps-script/Index.html &mdash; RELAY CONSOLE front end</li>
       <li>apps-script/appsscript.json &mdash; manifest</li>
+      <li>apps-script/webhook-Code.gs &mdash; public telemetry webhook</li>
       <li>nexus-intake-index.html &mdash; original terminal dashboard</li>
       <li>nexus-dashboard.html &mdash; this page</li>
     </ul>
@@ -82,6 +84,7 @@
 
 <script>
   var EXEC_URL = 'https://script.google.com/macros/s/AKfycbyFKeQ6SOJJZaTCUTV8eCp5OvhCU3SazNkVUjz4ri7a29HFPHW_tRMLXZyjFeTnT_L1/exec';
+  var WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwgykVGo3MhFroUZuHVou5G4r25t3gxAsqgbuppaRbCd-ehyi2fgUsmJmA7ODS6HluPug/exec';
   var EDITOR_URL = 'https://script.google.com/home/projects/1UYZhlovMJv3tzL00yvQPcPrbYmE04Ycqz9cYzLbqeGonpn9FMrNANoqP/edit';
   document.getElementById('open-console').href = EXEC_URL;
   document.getElementById('open-editor').href = EDITOR_URL;
@@ -100,7 +103,7 @@
     });
     log('DISPATCHING PAYLOAD ' + body);
     // text/plain keeps this a "simple" request so Apps Script accepts it cross-origin
-    fetch(EXEC_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: body, redirect:'follow' })
+    fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: body, redirect:'follow' })
       .then(function(r){ return r.text(); })
       .then(function(txt){
         try {
