@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXUS INTAKE // APPS SCRIPT DASHBOARD</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#050505;color:#4af626;font-family:'VT323',ui-monospace,monospace;padding:16px;font-size:16px}
+  .wrap{max-width:720px;margin:auto}
+  h1{font-size:1.25rem;margin-bottom:4px;text-shadow:0 0 8px #4af626}
+  .sub{color:#2f9e18;font-size:.85rem}
+  .box{border:2px solid #4af626;background:rgba(0,20,0,.9);box-shadow:0 0 12px rgba(74,246,38,.5);padding:14px;margin-top:14px}
+  .box h2{font-size:1rem;color:#00e5ff;margin-bottom:8px}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed #1f5e12;font-size:.85rem;word-break:break-all}
+  .row span:first-child{color:#2f9e18;white-space:nowrap}
+  .ok{color:#4af626}.warn{color:#ffb000}.cy{color:#00e5ff}
+  .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  a.btn,button{display:block;text-align:center;background:#111;color:#4af626;border:1px solid #4af626;padding:12px;font-family:inherit;font-size:1rem;cursor:pointer;text-decoration:none}
+  a.btn:hover,button:hover{background:#4af626;color:#000}
+  input{width:100%;background:#000;color:#4af626;border:1px solid #1f5e12;padding:10px;font-family:inherit;font-size:1rem;margin-top:6px}
+  #term{background:#000;border:1px dashed #4af626;padding:10px;height:180px;overflow-y:auto;font-size:.8rem;line-height:1.4;margin-top:10px}
+  ul{list-style:none;font-size:.85rem}
+  li{padding:4px 0;border-bottom:1px dashed #1f5e12}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>[:: NEXUS INTAKE // APPS SCRIPT DASHBOARD ::]</h1>
+  <div class="sub">MUSIC CITY, U.S.A. FIDELITY SPU // DRIVE FILE RELAY</div>
+
+  <div class="box">
+    <h2>&gt; DEPLOYMENT STATUS</h2>
+    <div class="row"><span>PROJECT</span><span>Drive File Relay</span></div>
+    <div class="row"><span>WEB APP</span><span>Nexus Intake Console</span></div>
+    <div class="row"><span>VERSION</span><span class="ok">v2 // Oct 31, 2026 6:58 PM CDT</span></div>
+    <div class="row"><span>EXECUTES AS</span><span>Me (owner)</span></div>
+    <div class="row"><span>ACCESS</span><span class="warn">Anyone with a Google account</span></div>
+    <div class="row"><span>RUNTIME</span><span>V8 // America/Chicago</span></div>
+    <div class="row"><span>DRIVE ASSET</span><span>1ndrz2aXePS6XWnwN5_cidfkurWXIOPzG</span></div>
+    <div class="btns">
+      <a class="btn" id="open-console" target="_blank" rel="noopener">OPEN CONSOLE</a>
+      <a class="btn" id="open-editor" target="_blank" rel="noopener">OPEN EDITOR</a>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>&gt; ENDPOINT MAP</h2>
+    <ul>
+      <li><span class="cy">doGet</span> &mdash; serves Index.html (RELAY CONSOLE)</li>
+      <li><span class="cy">getRelayStats()</span> &mdash; counts files waiting in the intake folder</li>
+      <li><span class="cy">executeManualBatch()</span> &mdash; shares each file to the 4 satellite accounts, moves it to HQ</li>
+      <li><span class="cy">runDriveRelayPipeline()</span> &mdash; trigger-friendly wrapper for the batch</li>
+      <li><span class="cy">doPost</span> &mdash; telemetry webhook (telemetryNode, trackingLedger)</li>
+    </ul>
+  </div>
+
+  <div class="box">
+    <h2>&gt; TELEMETRY WEBHOOK TEST</h2>
+    <div class="sub">telemetryNode</div>
+    <input id="node" value="NASHVILLE-SPU">
+    <div class="sub" style="margin-top:8px">trackingLedger</div>
+    <input id="ledger" value="DONELSON">
+    <div class="btns">
+      <button onclick="ping()">FIRE doPost</button>
+      <button onclick="clearLog()">CLEAR LOG</button>
+    </div>
+    <div id="term">&gt; DASHBOARD ONLINE.<br>&gt; AWAITING MANUAL OVERRIDE...<br></div>
+  </div>
+
+  <div class="box">
+    <h2>&gt; REPO FILES</h2>
+    <ul>
+      <li>nexus-intake.gs &mdash; live server code (satellite emails redacted here)</li>
+      <li>apps-script/Index.html &mdash; RELAY CONSOLE front end</li>
+      <li>apps-script/appsscript.json &mdash; manifest</li>
+      <li>nexus-intake-index.html &mdash; original terminal dashboard</li>
+      <li>nexus-dashboard.html &mdash; this page</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  var EXEC_URL = 'https://script.google.com/macros/s/AKfycbyFKeQ6SOJJZaTCUTV8eCp5OvhCU3SazNkVUjz4ri7a29HFPHW_tRMLXZyjFeTnT_L1/exec';
+  var EDITOR_URL = 'https://script.google.com/home/projects/1UYZhlovMJv3tzL00yvQPcPrbYmE04Ycqz9cYzLbqeGonpn9FMrNANoqP/edit';
+  document.getElementById('open-console').href = EXEC_URL;
+  document.getElementById('open-editor').href = EDITOR_URL;
+
+  function log(m){
+    var t=document.getElementById('term');
+    t.innerHTML += '[' + new Date().toLocaleTimeString() + '] &gt; ' + m + '<br>';
+    t.scrollTop = t.scrollHeight;
+  }
+  function clearLog(){ document.getElementById('term').innerHTML = '&gt; LOG CLEARED.<br>'; }
+
+  function ping(){
+    var body = JSON.stringify({
+      telemetryNode: document.getElementById('node').value || 'Unknown',
+      trackingLedger: document.getElementById('ledger').value || 'Unknown'
+    });
+    log('DISPATCHING PAYLOAD ' + body);
+    // text/plain keeps this a "simple" request so Apps Script accepts it cross-origin
+    fetch(EXEC_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: body, redirect:'follow' })
+      .then(function(r){ return r.text(); })
+      .then(function(txt){
+        try {
+          var j = JSON.parse(txt);
+          log('[' + (j.status||'?').toUpperCase() + '] ' + (j.message||'') + (j.grade ? ' // ' + j.grade : ''));
+        } catch(e) {
+          log('[BLOCKED] Got a Google sign-in page, not JSON. Set web app access to "Anyone" to test from here.');
+        }
+      })
+      .catch(function(err){
+        log('[BLOCKED] ' + err.message + ' // Access is Google-account only, so outside requests are refused. Set access to "Anyone" to test from here.');
+      });
+  }
+</script>
+</body>
+</html>
