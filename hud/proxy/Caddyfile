@@ -1,0 +1,21 @@
+# Automatic HTTPS for {$HUD_DOMAIN}. The domain's DNS A record must point at the VM first.
+{
+	email {$HUD_ACME_EMAIL}
+}
+
+{$HUD_DOMAIN} {
+	encode zstd gzip
+
+	# Never expose the Lucee admin or internal folders.
+	@blocked path /lucee/* /lucee /WEB-INF/* /lib/* /includes/* /tools/* /db/* /admin/_guard.cfm
+	respond @blocked 404
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		-Server
+		-X-Powered-By
+	}
+
+	reverse_proxy app:8888
+}

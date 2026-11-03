@@ -1,0 +1,135 @@
+<!--
+  HUD feed widget for Blogger.
+  Paste into Layout > Add a Gadget > HTML/JavaScript.
+  1) Replace HUD_API_BASE below with your deployed HTTPS origin (no trailing slash).
+  2) The API only answers CORS for https://<yourblog>.blogspot.com. For a custom
+     blog domain, add it to HUD_CORS_EXTRA_ORIGINS in the server's .env.
+  Rendering uses createElement + textContent only (no HTML-string APIs), so text
+  from the feed is never parsed as HTML.
+-->
+<div id="hudw" class="hudw" aria-live="polite">
+  <div class="hudw-tabs" role="tablist"></div>
+  <div class="hudw-body">Loading HUD feed...</div>
+  <div class="hudw-foot"></div>
+</div>
+<style>
+.hudw{font:13px/1.45 ui-monospace,Menlo,Consolas,monospace;background:#05080d;color:#cfe9f5;border:1px solid #1d3a52;padding:10px;max-width:100%}
+.hudw-tabs{display:flex;gap:6px;margin-bottom:8px}
+.hudw-tabs button{background:#0a111b;color:#7fa3b8;border:1px solid #2b5f86;padding:4px 10px;font:inherit;cursor:pointer;text-transform:uppercase;letter-spacing:.1em}
+.hudw-tabs button[aria-selected="true"]{background:#38e1ff;color:#001018}
+.hudw-entry{border-top:1px dashed #1d3a52;padding:6px 0}
+.hudw-code{color:#ffb347;font-size:11px;letter-spacing:.15em}
+.hudw-name{display:block;font-weight:700;text-transform:uppercase}
+.hudw-bar{display:block;height:6px;background:#081420;border:1px solid #1d3a52;margin:3px 0}
+.hudw-fill{display:block;height:100%;background:#38e1ff}
+.hudw-dim{color:#7fa3b8;font-size:12px}
+.hudw-warn{color:#ffb347;border:1px dashed #ffb347;padding:4px 6px;margin:4px 0;font-size:12px}
+.hudw a{color:#38e1ff}
+.hudw-foot{margin-top:6px;color:#7fa3b8;font-size:11px}
+</style>
+<script>
+(function () {
+  "use strict";
+  // ---- set this to your server, e.g. "https://hud.example.com" -------------
+  var HUD_API_BASE = "https://YOUR-HUD-DOMAIN.example";
+  // ---------------------------------------------------------------------------
+  var VARIANTS = [["sectors", "7 Sectors"], ["companies", "3 Companies"]];
+  var root = document.getElementById("hudw");
+  if (!root) return;
+  var tabs = root.querySelector(".hudw-tabs");
+  var body = root.querySelector(".hudw-body");
+  var foot = root.querySelector(".hudw-foot");
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = String(text);
+    return n;
+  }
+  function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  function num(v) { var x = Number(v); return isFinite(x) ? x : 0; }
+  function fmtInt(v) { return Math.round(num(v)).toLocaleString(); }
+  function fmtSize(mb) { mb = num(mb); return mb >= 1000 ? (mb / 1000).toFixed(1) + " GB" : mb.toFixed(1) + " MB"; }
+  function safeHttps(u) {
+    try { var p = new URL(String(u)); return p.protocol === "https:" ? p.href : ""; } catch (e) { return ""; }
+  }
+  function bar(pct) {
+    var b = el("span", "hudw-bar"), f = el("span", "hudw-fill");
+    f.style.width = Math.max(0, Math.min(100, Math.round(pct))) + "%";
+    b.appendChild(f);
+    return b;
+  }
+
+  function renderSectors(data) {
+    var entries = Array.isArray(data.entries) ? data.entries : [];
+    var maxF = 1;
+    entries.forEach(function (e) { maxF = Math.max(maxF, num(e.file_count)); });
+    entries.forEach(function (e) {
+      var row = el("div", "hudw-entry");
+      row.appendChild(el("span", "hudw-code", e.code));
+      row.appendChild(el("span", "hudw-name", e.name));
+      row.appendChild(bar(num(e.file_count) / maxF * 100));
+      row.appendChild(el("span", "hudw-dim", fmtInt(e.file_count) + " files \u00b7 " + fmtSize(e.size_mb)));
+      body.appendChild(row);
+    });
+  }
+
+  function renderCompanies(data) {
+    if (data.disclaimer) body.appendChild(el("div", "hudw-warn", data.disclaimer));
+    (Array.isArray(data.entries) ? data.entries : []).forEach(function (e) {
+      var row = el("div", "hudw-entry");
+      row.appendChild(el("span", "hudw-code", e.code));
+      row.appendChild(el("span", "hudw-name", e.name));
+      if (e.mission) row.appendChild(el("div", "", e.mission));
+      if (Array.isArray(e.flagship_projects) && e.flagship_projects.length) {
+        row.appendChild(el("div", "hudw-dim", "Projects: " + e.flagship_projects.join(", ")));
+      }
+      if (e.volunteer_help) row.appendChild(el("div", "hudw-dim", "Help: " + e.volunteer_help));
+      if (Array.isArray(e.official_links)) {
+        var ul = el("ul", "");
+        e.official_links.forEach(function (l) {
+          var href = safeHttps(l && l.url);
+          if (!href) return;
+          var li = el("li", ""), a = el("a", "", l.label || href);
+          a.href = href; a.rel = "noopener noreferrer nofollow"; a.target = "_blank";
+          li.appendChild(a); ul.appendChild(li);
+        });
+        if (ul.firstChild) row.appendChild(ul);
+      }
+      if (e.preservation_notes) row.appendChild(el("div", "hudw-dim", "Preservation: " + e.preservation_notes));
+      body.appendChild(row);
+    });
+  }
+
+  function load(variant) {
+    Array.prototype.forEach.call(tabs.children, function (b) {
+      b.setAttribute("aria-selected", b.getAttribute("data-v") === variant ? "true" : "false");
+    });
+    clear(body); clear(foot);
+    body.appendChild(el("span", "hudw-dim", "Loading..."));
+    var url = HUD_API_BASE.replace(/\/+$/, "") + "/api/feed.cfm?variant=" + encodeURIComponent(variant);
+    fetch(url, { method: "GET", mode: "cors", credentials: "omit", referrerPolicy: "strict-origin-when-cross-origin" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (data) {
+        clear(body);
+        if (!data || typeof data !== "object") throw new Error("bad feed");
+        if (variant === "sectors") renderSectors(data); else renderCompanies(data);
+        var ev = Array.isArray(data.events) && data.events[0];
+        foot.textContent = (ev ? "[" + String(ev.level).toUpperCase() + "] " + ev.message + "  \u00b7  " : "") +
+          "Updated " + (data.generated_at || "");
+      })
+      .catch(function (err) {
+        clear(body);
+        body.appendChild(el("span", "hudw-dim", "HUD feed unavailable (" + err.message + ")."));
+      });
+  }
+
+  VARIANTS.forEach(function (v) {
+    var b = el("button", "", v[1]);
+    b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("data-v", v[0]);
+    b.addEventListener("click", function () { load(v[0]); });
+    tabs.appendChild(b);
+  });
+  load("sectors");
+})();
+</script>

@@ -1,0 +1,92 @@
+# HUD stack: Lucee 6 + MySQL 8. Copy .env.example to .env and fill it in first.
+#   docker compose up -d                      # app on port 80 (HTTP only)
+#   docker compose --profile https up -d      # adds Caddy on 80/443 with automatic HTTPS
+name: hud
+
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --local-infile=0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-hud}
+      HUD_RW_USER: ${HUD_RW_USER:-hud_rw}
+      HUD_RW_PASSWORD: ${HUD_RW_PASSWORD:?set HUD_RW_PASSWORD in .env}
+      HUD_RO_USER: ${HUD_RO_USER:-hud_ro}
+      HUD_RO_PASSWORD: ${HUD_RO_PASSWORD:?set HUD_RO_PASSWORD in .env}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    # No ports published: MySQL is reachable only on the internal compose network.
+    networks: [internal]
+
+  app:
+    image: lucee/lucee:6.2
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HUD_DB_HOST: db
+      HUD_DB_PORT: "3306"
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-hud}
+      HUD_RW_USER: ${HUD_RW_USER:-hud_rw}
+      HUD_RW_PASSWORD: ${HUD_RW_PASSWORD}
+      HUD_RO_USER: ${HUD_RO_USER:-hud_ro}
+      HUD_RO_PASSWORD: ${HUD_RO_PASSWORD}
+      HUD_ADMIN_PASSWORD: ${HUD_ADMIN_PASSWORD:-}
+      HUD_COOKIE_SECURE: ${HUD_COOKIE_SECURE:-false}
+      HUD_TRUST_PROXY: ${HUD_TRUST_PROXY:-false}
+      HUD_HSTS: ${HUD_HSTS:-false}
+      HUD_API_RATE_PER_MIN: ${HUD_API_RATE_PER_MIN:-60}
+      HUD_CORS_EXTRA_ORIGINS: ${HUD_CORS_EXTRA_ORIGINS:-}
+      HUD_SITE_TITLE: ${HUD_SITE_TITLE:-ARCHIVE//HUD}
+      # MySQL JDBC extension for Lucee (installed at startup if missing).
+      LUCEE_EXTENSIONS: "7E673D15-D87C-41A6-8B5F-1956528C605F"
+      # Turn off the Lucee web admin (/lucee/admin). Caddyfile also blocks /lucee/*.
+      LUCEE_ADMIN_ENABLED: "false"
+      TZ: UTC
+    volumes:
+      - ./app:/var/www
+    ports:
+      # Default: public on port 80. With Caddy, set HUD_BIND=127.0.0.1 and HUD_HTTP_PORT=8080 in .env.
+      - "${HUD_BIND:-0.0.0.0}:${HUD_HTTP_PORT:-80}:8888"
+    networks: [internal, web]
+
+  caddy:
+    image: caddy:2
+    profiles: ["https"]
+    restart: unless-stopped
+    depends_on: [app]
+    environment:
+      HUD_DOMAIN: ${HUD_DOMAIN:-}
+      HUD_ACME_EMAIL: ${HUD_ACME_EMAIL:-}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./proxy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [web]
+
+volumes:
+  db_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal:
+    internal: true
+  web:

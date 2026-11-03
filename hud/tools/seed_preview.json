@@ -1,0 +1,305 @@
+{
+  "totals_check": [
+    {
+      "sector": "SECTOR 01",
+      "json_files": 122,
+      "csv_files": 122,
+      "json_size": 0.1,
+      "csv_mb": 99.89,
+      "ratio_csv_mb_to_json": 998.9
+    },
+    {
+      "sector": "SECTOR 02",
+      "json_files": 33290,
+      "csv_files": 33290,
+      "json_size": 290.6,
+      "csv_mb": 290613.48,
+      "ratio_csv_mb_to_json": 1000.0
+    },
+    {
+      "sector": "SECTOR 03",
+      "json_files": 9807,
+      "csv_files": 9807,
+      "json_size": 54.0,
+      "csv_mb": 53978.0,
+      "ratio_csv_mb_to_json": 999.6
+    },
+    {
+      "sector": "SECTOR 04",
+      "json_files": 7821,
+      "csv_files": 7821,
+      "json_size": 39.8,
+      "csv_mb": 39803.3,
+      "ratio_csv_mb_to_json": 1000.1
+    },
+    {
+      "sector": "SECTOR 05",
+      "json_files": 7924,
+      "csv_files": 7924,
+      "json_size": 29.5,
+      "csv_mb": 29514.01,
+      "ratio_csv_mb_to_json": 1000.5
+    },
+    {
+      "sector": "SECTOR 06",
+      "json_files": 1651,
+      "csv_files": 1651,
+      "json_size": 53.1,
+      "csv_mb": 53068.97,
+      "ratio_csv_mb_to_json": 999.4
+    },
+    {
+      "sector": "SECTOR 07",
+      "json_files": 856,
+      "csv_files": 856,
+      "json_size": 2.7,
+      "csv_mb": 2671.62,
+      "ratio_csv_mb_to_json": 989.5
+    }
+  ],
+  "csv_rows": 61471,
+  "json_total_files": 61471,
+  "csv_total_mb": 469749.27,
+  "sensitive_looking_rows_not_named": 2022,
+  "top_folder_rollups": 15,
+  "preview_sectors": {
+    "variant": "sectors",
+    "sectors": [
+      {
+        "code": "SECTOR 01",
+        "name": "SCUDERIA",
+        "tagline": "V12 COMBUSTION CORE",
+        "file_count": 122,
+        "size_mb": 99.89,
+        "top_folders": [
+          {
+            "label": "03_Core_Logic",
+            "file_count": 122,
+            "size_mb": 99.89
+          }
+        ]
+      },
+      {
+        "code": "SECTOR 02",
+        "name": "MILWAUKEE",
+        "tagline": "V-TWIN HEAVY REPAIR",
+        "file_count": 33290,
+        "size_mb": 290613.48,
+        "top_folders": [
+          {
+            "label": "07_Restoration",
+            "file_count": 32705,
+            "size_mb": 225237.57
+          },
+          {
+            "label": "Computers/My Laptop (backup, not moved)",
+            "file_count": 454,
+            "size_mb": 13197.31
+          },
+          {
+            "label": "02_Chronicles_Memories",
+            "file_count": 131,
+            "size_mb": 52178.6
+          }
+        ]
+      },
+      {
+        "code": "SECTOR 03",
+        "name": "DAVIDSON",
+        "tagline": "CUSTOM TOOLING & BRASS",
+        "file_count": 9807,
+        "size_mb": 53978.0,
+        "top_folders": [
+          {
+            "label": "04_Sanctuary_Aesthetics",
+            "file_count": 4802,
+            "size_mb": 14344.13
+          },
+          {
+            "label": "Computers/My Laptop (backup, not moved)",
+            "file_count": 2638,
+            "size_mb": 19381.53
+          },
+          {
+            "label": "08_Parables",
+            "file_count": 2367,
+            "size_mb": 20252.34
+          }
+        ]
+      },
+      {
+        "code": "SECTOR 04",
+        "name": "MAKO PLATE",
+        "tagline": "SUB-GRID LOGISTICS",
+        "file_count": 7821,
+        "size_mb": 39803.3,
+        "top_folders": [
+          {
+            "label": "Computers/My Laptop (backup, not moved)",
+            "file_count": 7013,
+            "size_mb": 39133.54
+          },
+          {
+            "label": "01_Visions_Blueprint",
+            "file_count": 745,
+            "size_mb": 38.74
+          },
+          {
+            "label": "00_INBOX_AIRLOCK",
+            "file_count": 63,
+            "size_mb": 631.02
+          }
+        ]
+      },
+      {
+        "code": "SECTOR 05",
+        "name": "SLUM FORGE",
+        "tagline": "EXHAUST & PIPING",
+        "file_count": 7924,
+        "size_mb": 29514.01,
+        "top_folders": [
+          {
+            "label": "Computers/My Laptop (backup, not moved)",
+            "file_count": 6242,
+            "size_mb": 24147.3
+          },
+          {
+            "label": "06_The_Word",
+            "file_count": 891,
+            "size_mb": 1194.24
+          },
+          {
+            "label": "09_Loaves_and_Fishes",
+            "file_count": 791,
+            "size_mb": 4172.47
+          }
+        ]
+      },
+      {
+        "code": "SECTOR 06",
+        "name": "MARANELLO",
+        "tagline": "CARBON AERO ASSETS",
+        "file_count": 1651,
+        "size_mb": 53068.97,
+        "top_folders": [
+          {
+            "label": "20_AN_HERO_VAULT",
+            "file_count": 1651,
+            "size_mb": 53068.97
+          }
+        ]
+      },
+      {
+        "code": "SECTOR 07",
+        "name": "HIGH-VOLTAGE",
+        "tagline": "HQ SURVEILLANCE GATE",
+        "file_count": 856,
+        "size_mb": 2671.62,
+        "top_folders": [
+          {
+            "label": "30_SHINRADOOMMUSIC",
+            "file_count": 856,
+            "size_mb": 2671.62
+          }
+        ]
+      }
+    ]
+  },
+  "preview_companies": {
+    "variant": "companies",
+    "orgs": [
+      {
+        "name": "Wikimedia Foundation",
+        "projects": [
+          "Wikipedia",
+          "Wikimedia Commons",
+          "Wikidata",
+          "Wiktionary",
+          "Wikisource",
+          "MediaWiki"
+        ],
+        "links": [
+          {
+            "label": "Mission",
+            "url": "https://wikimediafoundation.org/about/mission/"
+          },
+          {
+            "label": "Get involved",
+            "url": "https://wikimediafoundation.org/participate/"
+          },
+          {
+            "label": "Wikimedia projects",
+            "url": "https://wikimediafoundation.org/what-we-do/wikimedia-projects/"
+          },
+          {
+            "label": "Database dumps",
+            "url": "https://dumps.wikimedia.org/"
+          }
+        ]
+      },
+      {
+        "name": "Mozilla",
+        "projects": [
+          "Firefox",
+          "Thunderbird",
+          "MDN Web Docs",
+          "Mozilla Foundation"
+        ],
+        "links": [
+          {
+            "label": "Manifesto",
+            "url": "https://www.mozilla.org/en-US/about/manifesto/"
+          },
+          {
+            "label": "Get involved",
+            "url": "https://www.mozilla.org/en-US/contribute/"
+          },
+          {
+            "label": "Localize (Pontoon)",
+            "url": "https://pontoon.mozilla.org/"
+          },
+          {
+            "label": "File a bug",
+            "url": "https://bugzilla.mozilla.org/"
+          },
+          {
+            "label": "MDN Web Docs",
+            "url": "https://developer.mozilla.org/"
+          }
+        ]
+      },
+      {
+        "name": "Linux Foundation",
+        "projects": [
+          "Linux kernel (supported via the LF)",
+          "Kubernetes (CNCF)",
+          "Node.js (OpenJS Foundation)",
+          "OpenSSF",
+          "PyTorch Foundation"
+        ],
+        "links": [
+          {
+            "label": "About",
+            "url": "https://www.linuxfoundation.org/about"
+          },
+          {
+            "label": "All projects",
+            "url": "https://www.linuxfoundation.org/projects"
+          },
+          {
+            "label": "LF Education",
+            "url": "https://training.linuxfoundation.org/"
+          },
+          {
+            "label": "LFX",
+            "url": "https://lfx.linuxfoundation.org/"
+          },
+          {
+            "label": "kernel.org",
+            "url": "https://www.kernel.org/"
+          }
+        ]
+      }
+    ]
+  }
+}
