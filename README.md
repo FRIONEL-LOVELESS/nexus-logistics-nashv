@@ -20,3 +20,8 @@ This repository is engineered for Android-only administration.
 1. **Pull:** Clone via MGit.
 2. **Modify:** Edit locally via Spck Editor or Acode.
 3. **Push:** Commit and push securely via MGit using a GitHub Personal Access Token (classic).
+
+## Updates (Nov 2026)
+
+- **`apps-script/nexus-spu-2/`** — Nexus Logistics SPU, Part Two: Apps Script that drafts a daily Blogger post (Gemini API + Blogger API v3) and saves it as a draft for review. Set `GEMINI_API_KEY` in Script Properties.
+- **`hud/`** — Sector HUD: Lucee (CFML) + MariaDB + Caddy in Docker, with a read-only JSON feed (`/api/feed.cfm`) and a Blogger widget. See `hud/README.md` for setup. Copy `.env.example` to `.env`; no secrets are committed.
